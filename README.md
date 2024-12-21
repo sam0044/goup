@@ -3,6 +3,6 @@ goatop is a terminal-based system monitoring tool written in Go, inspired by too
 
 ## Developer: Getting Started
 
-Go (version 1.18 or later)
+Go (version 1.20 or later)
 
 make sure to use `go fmt` before commiting code

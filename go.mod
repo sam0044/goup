@@ -1,6 +1,6 @@
 module github.com/JoshuaGabriel/mytop
 
-go 1.23.1
+go 1.20
 
 require (
 	github.com/rivo/tview v0.0.0-20241103174730-c76f7879f592
