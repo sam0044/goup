@@ -26,4 +26,4 @@ jobs:
         uses: Jerome1337/gofmt-action@v1.0.5
 
       - name: Build project
-        run: go build -o goatop
+        run: go build -o GoUp
