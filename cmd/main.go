@@ -15,7 +15,6 @@ func Main(args []string) error {
 	app := &cli.App{
 		Name:                 "goup",
 		Usage:                "Resource monitoring go application",
-		Copyright:            "Apache License 2.0",
 		HideHelpCommand:      true,
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
