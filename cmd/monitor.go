@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"runtime"
 	"fmt"
-	"path/filepath"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -13,6 +11,8 @@ import (
 	"github.com/shirou/gopsutil/v4/net"
 	"github.com/shirou/gopsutil/v4/process"
 	"github.com/urfave/cli/v2"
+	"path/filepath"
+	"runtime"
 	"sort"
 	"time"
 )
@@ -32,8 +32,9 @@ $ goup profile
 `,
 	}
 }
+
 type model struct {
-	processTable   table.Model
+	processTable  table.Model
 	diskTable     table.Model
 	networkTable  table.Model
 	cpuPercent    float64
@@ -67,7 +68,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case tickMsg:
 		var err error
-		
+
 		// CPU Usage
 		cpuPercent, err := cpu.Percent(0, false)
 		if err != nil {
@@ -102,13 +103,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Network Stats
 		m.lastNetStats = m.networkStats
 		m.lastCheckTime = time.Now()
-		
+
 		netStats, err := net.IOCounters(true)
 		if err != nil {
 			m.err = err
 			return m, nil
 		}
-		
+
 		m.networkStats = make(map[string]net.IOCountersStat)
 		for _, stat := range netStats {
 			if stat.Name != "lo" { // Skip loopback interface
@@ -140,7 +141,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if duration > 0 {
 						bytesInPerSec := float64(stat.BytesRecv-lastStat.BytesRecv) / duration
 						bytesOutPerSec := float64(stat.BytesSent-lastStat.BytesSent) / duration
-						
+
 						networkRows = append(networkRows, table.Row{
 							iface,
 							fmt.Sprintf("%.1f MB/s", bytesInPerSec/1e6),
@@ -154,14 +155,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Update process table
 		procs, _ := process.Processes()
-		
+
 		// Pre-filter to only get processes with non-zero CPU usage
 		type procInfo struct {
 			name string
 			cpu  float64
 			io   int32
 		}
-		
+
 		procInfos := make([]procInfo, 0, 30)
 		for _, p := range procs {
 			cpu, _ := p.CPUPercent()
@@ -280,59 +281,59 @@ func (m model) View() string {
 func profile(ctx *cli.Context) error {
 	// Set GOMAXPROCS to limit CPU usage
 	runtime.GOMAXPROCS(2)
-	
-		// Process table
-		processColumns := []table.Column{
-			{Title: "Process", Width: 30},
-			{Title: "CPU%", Width: 10},
-			{Title: "IO", Width: 10},
-		}
-	
-		processTable := table.New(
-			table.WithColumns(processColumns),
-			table.WithFocused(true),
-			table.WithHeight(20),
-		)
-	
-		// Disk table
-		diskColumns := []table.Column{
-			{Title: "Mount", Width: 15},
-			{Title: "Used", Width: 10},
-			{Title: "Total", Width: 10},
-			{Title: "Usage%", Width: 10},
-		}
-	
-		diskTable := table.New(
-			table.WithColumns(diskColumns),
-			table.WithHeight(10),
-		)
-	
-		// Network table
-		networkColumns := []table.Column{
-			{Title: "Interface", Width: 15},
-			{Title: "Download", Width: 15},
-			{Title: "Upload", Width: 15},
-		}
-	
-		networkTable := table.New(
-			table.WithColumns(networkColumns),
-			table.WithHeight(8),
-		)
-	
-		// Common table styles
-		s := table.DefaultStyles()
-		s.Header = s.Header.
-			BorderStyle(lipgloss.NormalBorder()).
-			BorderForeground(lipgloss.Color("240")).
-			BorderBottom(true).
-			Bold(true)
-	
-		processTable.SetStyles(s)
-		diskTable.SetStyles(s)
-		networkTable.SetStyles(s)
+
+	// Process table
+	processColumns := []table.Column{
+		{Title: "Process", Width: 30},
+		{Title: "CPU%", Width: 10},
+		{Title: "IO", Width: 10},
+	}
+
+	processTable := table.New(
+		table.WithColumns(processColumns),
+		table.WithFocused(true),
+		table.WithHeight(20),
+	)
+
+	// Disk table
+	diskColumns := []table.Column{
+		{Title: "Mount", Width: 15},
+		{Title: "Used", Width: 10},
+		{Title: "Total", Width: 10},
+		{Title: "Usage%", Width: 10},
+	}
+
+	diskTable := table.New(
+		table.WithColumns(diskColumns),
+		table.WithHeight(10),
+	)
+
+	// Network table
+	networkColumns := []table.Column{
+		{Title: "Interface", Width: 15},
+		{Title: "Download", Width: 15},
+		{Title: "Upload", Width: 15},
+	}
+
+	networkTable := table.New(
+		table.WithColumns(networkColumns),
+		table.WithHeight(8),
+	)
+
+	// Common table styles
+	s := table.DefaultStyles()
+	s.Header = s.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		Bold(true)
+
+	processTable.SetStyles(s)
+	diskTable.SetStyles(s)
+	networkTable.SetStyles(s)
 
 	m := model{
-		processTable:   processTable,
+		processTable:  processTable,
 		diskTable:     diskTable,
 		networkTable:  networkTable,
 		diskStats:     make(map[string]disk.UsageStat),
