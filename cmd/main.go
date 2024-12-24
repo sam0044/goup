@@ -19,6 +19,7 @@ func Main(args []string) error {
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			cmdMonitor(),
+			cmdScan(),
 		},
 	}
 
