@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 	// "github.com/gdamore/tcell/v2"
-	"time"
 	"github.com/rivo/tview"
+	"time"
 	// "github.com/shirou/gopsutil/v4/cpu"
 	// "github.com/shirou/gopsutil/v4/mem"
 	"github.com/urfave/cli/v2"
@@ -52,7 +52,7 @@ func scanResource(ctx *cli.Context) error {
 
 	// Set the root and run the application
 	if err := app.SetRoot(textView, true).Run(); err != nil {
-			fmt.Println("ooga");
+		fmt.Println("ooga")
 	}
 	return nil
 }
